@@ -1,0 +1,17 @@
+package postgres
+
+const SchemaComments = `
+	CREATE TABLE IF NOT EXISTS comments (
+		ID SERIAL PRIMARY KEY,
+		ArticleID VARCHAR(36) NOT NULL,
+		UserID INT NOT NULL,
+		Content VARCHAR(1000) NOT NULL,
+		CreatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	);
+
+	CREATE TABLE IF NOT EXISTS likes (
+		ID SERIAL PRIMARY KEY,
+		CommentID INT NOT NULL,
+		UserID INT NOT NULL
+	);
+`
