@@ -1,0 +1,32 @@
+trigger:
+  batch: true
+  paths:
+    include:
+    - frontend/*
+
+resources:
+  repositories:
+  - repository: templates
+    type: git
+    ref: refs/heads/master
+    name: schwarzit.odj-pipeline-templates/odj-deliver-templates
+
+variables:
+- group: odj-technical-product-properties
+- group: odj-component-frontend-properties
+
+extends:
+  template: templates/technologies/npm/v2/odj-pipeline-template-technology-npm.yml@templates
+  parameters:
+    odj_devenv_static_code_analysis:
+    - none
+    odj_devenv_dependency_scanner:
+    - snyk_saas_dependency
+    - snyk_saas_dockerfile
+    odj_devenv_artifact_repository:
+    - artifactory_saas
+    odj_devenv_pipeline: azuredevops  # Managed by ODJ, do not modify
+    odj_devenv_code_repository: azuredevops  # Managed by ODJ, do not modify
+    odj_runenv_component_type: deployable  # Managed by ODJ, do not modify
+    productive_branch: refs/heads/main
+
