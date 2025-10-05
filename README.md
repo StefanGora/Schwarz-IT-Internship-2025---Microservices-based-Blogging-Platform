@@ -1,0 +1,1 @@
+# Schwarz-IT-Internship-2025---Microservices-based-Blogging-Platform
