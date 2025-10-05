@@ -1,0 +1,50 @@
+trigger:
+  batch: true
+  paths:
+    include:
+      - auth-service/*
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      ref: refs/heads/master
+      name: schwarzit.odj-pipeline-templates/odj-deliver-templates
+
+variables:
+  - group: odj-technical-product-properties
+  - group: odj-component-auth-service-properties
+
+extends:
+  template: templates/technologies/go/v2/odj-pipeline-template-technology-go.yml@templates
+  parameters:
+    odj_devenv_static_code_analysis:
+      - none
+    odj_devenv_dependency_scanner:
+      - snyk_saas_dependency
+      - snyk_saas_dockerfile
+    odj_devenv_artifact_repository:
+      - artifactory_saas
+    odj_devenv_pipeline: azuredevops # Managed by ODJ, do not modify
+    odj_devenv_code_repository: azuredevops # Managed by ODJ, do not modify
+    odj_runenv_component_type: deployable # Managed by ODJ, do not modify
+    productive_branch: refs/heads/main
+    # ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+    #   odj_deploy_stages:
+    #   - prod
+    go_build_arguments:
+      -o app -ldflags="-X main.gitCommit=$(Build.SourceVersion)
+      -X main.gitBranch=$(Build.SourceBranch)" ./cmd/main.go
+    go_tool_version: ^1.25
+    go_envs:
+      - CGO_ENABLED=0
+      - GOOS=linux
+      - GOARCH=amd64
+      - GO111MODULE=on
+      - CGO_LDFLAGS='-w -s'
+      - GOPRIVATE=dev.azure.com/*
+    go_run_tests: true
+    snyk_target_file: go.mod
+    run_go_linter: true
+    go_linter_version: v2.4.0
+    go_linter_arguments: -v -c .golangci.yml
